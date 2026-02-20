@@ -2,8 +2,14 @@ import "./Presentation.css";
 import { MdFace } from "react-icons/md";
 import { MdQrCode2 } from "react-icons/md";
 import { FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function Presentation() {
+  const navigate = useNavigate();
+  const toScanner = () => {
+    navigate("/Scanner");
+  };
+
   return (
     <div className="presentation">
       <div className="infoTop">
@@ -25,7 +31,7 @@ export default function Presentation() {
         </h1>
         <h3 className="subTitle">To Unlock Services</h3>
       </div>
-      <div className="qrBtn">
+      <div onClick={toScanner} className="qrBtn">
         <MdQrCode2 className="qr" />
       </div>
       <div className="presentationFooter">
