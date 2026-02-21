@@ -1,5 +1,7 @@
 import "./Scanner.css";
 import { MdFingerprint } from "react-icons/md";
+import { MdFace } from "react-icons/md";
+import { BsQrCode } from "react-icons/bs";
 export default function Scanner() {
   return (
     <div className="cont">
@@ -25,8 +27,21 @@ export default function Scanner() {
             </div>
           </div>
         </div>
-        <div className="scannerBody"></div>
-        <div className="scannerFooter"></div>
+        <div className="scannerFace">
+          <div className="face">
+            <MdFace className="faceIcon" />
+          </div>
+        </div>
+        <div className="scannerQR">
+          <BsQrCode />
+        </div>
+        <div className="scannerFooter">
+          <div className="dot"></div>
+          <p className="msg">Please show your Digital Pass</p>
+        </div>
+        <div className="credentials">
+          &bull; AEROID SECURE PROTOCOL &bull; DO NOT OBSTURUCT CAMERA
+        </div>
       </div>
     </div>
   );

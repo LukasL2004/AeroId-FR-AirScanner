@@ -29,14 +29,15 @@
   height: 100%;
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  flex-direction: column;
 }
 
 .scannerNav {
   width: 95%;
   height: 10%;
-  max-height: 80px;
+  max-height: 70px;
   background-color: #101010;
   color: #fff;
   display: flex;
@@ -45,6 +46,7 @@
   align-items: center;
   border-radius: 20px;
   border: 3px solid #242525;
+  margin-top: 0.5rem;
 }
 .logoSide {
   display: flex;
@@ -61,20 +63,20 @@
 }
 .titleSide h1 {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.7rem;
   display: flex;
   flex-direction: row;
 }
 .titleSide p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 .id {
   color: #007aff;
 }
 
 .logo {
-  font-size: 2rem;
+  font-size: 1.8rem;
   background-color: #007aff;
   padding: 0.4rem;
   border-radius: 100%;
@@ -87,7 +89,7 @@ subTitle {
 
 .infoSide {
   background-color: rgba(5, 58, 119, 0.5);
-  padding: 0.5rem;
+  padding: 0.4rem;
   border-radius: 5px;
   border: 2px solid rgba(5, 58, 119);
   color: #1c70cf;
@@ -105,4 +107,61 @@ subTitle {
   display: flex;
   align-items: center;
   gap: 0.4rem;
+}
+
+.scannerFace {
+  position: relative;
+  width: 23%;
+  height: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #a6abb3;
+  border-radius: 20px;
+}
+
+.face {
+  width: 60%;
+  height: 70%;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border: 2px dashed #949ba6;
+  border-radius: 50%;
+}
+
+.faceIcon {
+  font-size: 3rem;
+  color: #949ba6;
+}
+
+.scannerQR {
+  position: relative;
+  width: 15%;
+  height: 25%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #a6abb3;
+  border-radius: 20px;
+  font-size: 3rem;
+  color: #949ba6;
+}
+.scannerFooter {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.8rem;
+  border: 3px solid #2c2c2c;
+  color: #fff;
+  border-radius: 50px;
+  background-color: #242525;
+}
+
+.credentials {
+  margin-bottom: 0.5rem;
+  color: #787879;
+  font-size: 0.8rem;
 }
