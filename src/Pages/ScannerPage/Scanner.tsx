@@ -2,7 +2,14 @@ import "./Scanner.css";
 import { MdFingerprint } from "react-icons/md";
 import { MdFace } from "react-icons/md";
 import { BsQrCode } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 export default function Scanner() {
+  const navigate = useNavigate();
+
+  const toResults = () => {
+    navigate("/Results");
+  };
+
   return (
     <div className="cont">
       <div className="scanner">
@@ -20,7 +27,9 @@ export default function Scanner() {
           <div className="statusSide">
             <div className="status">
               <div className="dot"></div>
-              <div className="statusNow">Online</div>
+              <div onClick={toResults} className="statusNow">
+                Online
+              </div>
             </div>
             <div className="time">
               <div>14: 42: 09</div>

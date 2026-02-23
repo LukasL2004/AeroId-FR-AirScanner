@@ -1,0 +1,213 @@
+.results {
+  width: 100vw;
+  height: 100vh;
+  background-color: #1c1c1e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+}
+
+.headerResults {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 0.8rem;
+}
+
+.resultsIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  text-align: center;
+  gap: 1rem;
+  margin-left: 0.6rem;
+}
+
+.resultsIcon h1 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  color: #fff;
+}
+
+h1 .id {
+  color: #007aff;
+}
+
+.location {
+  margin-right: 0.6rem;
+  color: #fff;
+}
+.location p {
+  margin: 0;
+}
+
+.locTitle {
+  color: #7f7f81;
+  text-align: end;
+}
+
+.resultsBody {
+  height: 70%;
+  min-height: 400px;
+  width: 25%;
+  min-width: 300px;
+  background-color: #27292e;
+  border: 2px solid #3c3f43;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footerInfo {
+  color: #7f7f81;
+  font-size: 0.8rem;
+  margin-bottom: 0.4rem;
+}
+
+.checkmark {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  background-color: #007aff;
+  border-radius: 100%;
+  font-size: 2.3rem;
+  box-shadow: 0 0 10px #007aff;
+}
+
+.resultsSubTitle {
+  color: #fff;
+}
+.resultsTitles {
+  text-align: center;
+}
+
+.resultsMainComp {
+  width: 90%;
+  height: 40%;
+  background-color: #1d1d1d;
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem;
+  justify-content: space-evenly;
+  border-radius: 20px;
+}
+
+.bootomSection {
+  display: flex;
+  flex-direction: column;
+  height: 20%;
+  width: 100%;
+  background-color: #1d1d1d;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+
+.flightInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  /* padding: 0.4rem; */
+}
+
+.flightInfo p,
+.flightInfo h1 {
+  margin: 0;
+}
+
+.flightInfo .subTitle {
+  text-align: center;
+}
+
+.flightNumber {
+  color: #fff;
+}
+
+.time {
+  text-align: center;
+  color: #22c35d;
+  font-size: 1rem;
+  padding: 0.1rem 0.4rem;
+  background-color: rgb(34, 195, 93, 0.3);
+  border-radius: 30px;
+}
+
+.seatNr {
+  color: #007aff;
+}
+
+.lineComp {
+  display: flex;
+  justify-content: center;
+}
+
+.line {
+  height: 1px;
+  width: 98%;
+  border-bottom: 1px solid #7f7f81;
+}
+
+.passengerInfo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.class,
+passengerInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.class p,
+.passengerInfo p {
+  margin: 0;
+}
+
+.name {
+  color: #fff;
+  padding: 0.4rem 0;
+}
+
+.passengerClass {
+  padding: 0.3rem 1rem;
+  background-color: #3c3f43;
+  color: #fff;
+  border-radius: 30px;
+  margin-top: 0.4rem;
+  border: 1px solid #7f7f81;
+}
+
+.flight h1 {
+  margin: 0.3rem 0;
+}
+
+.passBtn {
+  padding: 1rem;
+  width: 85%;
+  background-color: #007aff;
+  border: 0;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.returnBtn {
+  font-size: 1.1rem;
+  background-color: transparent;
+  color: #fff;
+  border: 0;
+}
