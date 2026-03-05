@@ -10,6 +10,7 @@ export default function Scanner() {
   const facePhotoRef = useRef<HTMLCanvasElement>(null);
   const qrPhotoRef = useRef<HTMLCanvasElement>(null);
   // const qrVideoRef = useRef<HTMLVideoElement>(null);
+  const [time, setTime] = useState<string>();
   const navigate = useNavigate();
   const [sw, setSw] = useState<boolean>(true);
 
@@ -51,6 +52,7 @@ export default function Scanner() {
     console.log("facePhoto");
     setSw(!sw);
   };
+
   const takeQrPhoto = () => {
     const width = 1000;
     const height = width / (16 / 27);
@@ -71,6 +73,16 @@ export default function Scanner() {
 
   useEffect(() => {
     getVideo();
+
+    setInterval(() => {
+      const date = new Date();
+      const hours = date.getHours();
+      const mins = date.getMinutes();
+      const seconds = date.getSeconds();
+
+      const currentTime = hours + ":" + mins + ":" + seconds;
+      setTime(currentTime);
+    }, 1000);
   }, [sw]);
 
   const toResults = () => {
@@ -99,7 +111,7 @@ export default function Scanner() {
               </div>
             </div>
             <div className="time">
-              <div>14: 42: 09</div>
+              <div>{time}</div>
             </div>
           </div>
         </div>
