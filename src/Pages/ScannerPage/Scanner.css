@@ -118,9 +118,11 @@ subTitle {
   align-items: center;
   border: 2px solid #a6abb3;
   border-radius: 20px;
+  overflow: hidden;
 }
 
 .face {
+  position: absolute;
   width: 60%;
   height: 70%;
   align-items: center;
@@ -128,6 +130,26 @@ subTitle {
   justify-content: center;
   border: 2px dashed #949ba6;
   border-radius: 50%;
+}
+
+.facecam {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.screen {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+video {
+  transform: scaleX(-1);
 }
 
 .faceIcon {
@@ -146,7 +168,14 @@ subTitle {
   border-radius: 20px;
   font-size: 3rem;
   color: #949ba6;
+  overflow: hidden;
 }
+
+.scannerQR video {
+  width: 100%;
+  height: 100%;
+}
+
 .scannerFooter {
   display: flex;
   flex-direction: row;
@@ -164,4 +193,73 @@ subTitle {
   margin-bottom: 0.5rem;
   color: #787879;
   font-size: 0.8rem;
+}
+
+@media screen and (max-width: 1450px) {
+  .scannerFace {
+    width: 30%;
+  }
+
+  .scannerQR {
+    width: 20%;
+  }
+}
+
+@media screen and (max-width: 1050px) {
+  .scannerFace {
+    width: 40%;
+  }
+
+  .scannerQR {
+    width: 25%;
+  }
+}
+@media screen and (max-width: 750px) {
+  .scannerFace {
+    width: 55%;
+  }
+
+  .scannerQR {
+    width: 33%;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .time {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  .scannerFace {
+    width: 80%;
+  }
+
+  .scannerQR {
+    width: 50%;
+  }
+  .status {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .logoSide h1 {
+    font-size: 1.5rem;
+  }
+  .logoSide .subTitle {
+    font-size: 0.7rem;
+  }
+  .infoSide {
+    font-size: 0.8rem;
+  }
+}
+@media screen and (max-width: 400px) {
+  .scannerFace {
+    width: 90%;
+  }
+
+  .scannerQR {
+    width: 60%;
+  }
 }

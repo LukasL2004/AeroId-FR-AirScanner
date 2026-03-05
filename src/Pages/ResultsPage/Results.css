@@ -211,3 +211,26 @@ passengerInfo {
   color: #fff;
   border: 0;
 }
+
+@media screen and (max-height: 760px) {
+  .resultsBody {
+    height: 80%;
+  }
+}
+@media screen and (max-height: 600px) {
+  .passBtn {
+    padding: 0.5rem;
+  }
+}
+
+@media screen and (max-width: 355px) {
+  .locInfo {
+    font-size: 0.9rem;
+  }
+  .resultsIcon h1 {
+    font-size: 1.5rem;
+  }
+  .resultsIcon .logo {
+    font-size: 1.5rem;
+  }
+}

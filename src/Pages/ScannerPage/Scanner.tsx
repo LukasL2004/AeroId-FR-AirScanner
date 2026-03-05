@@ -1,10 +1,77 @@
 import "./Scanner.css";
 import { MdFingerprint } from "react-icons/md";
-import { MdFace } from "react-icons/md";
 import { BsQrCode } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { MdFace } from "react-icons/md";
+
 export default function Scanner() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const facePhotoRef = useRef<HTMLCanvasElement>(null);
+  const qrPhotoRef = useRef<HTMLCanvasElement>(null);
+  // const qrVideoRef = useRef<HTMLVideoElement>(null);
   const navigate = useNavigate();
+  const [sw, setSw] = useState<boolean>(true);
+
+  const getVideo = () => {
+    navigator.mediaDevices
+      .getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 1620 } },
+      })
+      .then((stream) => {
+        const video = videoRef.current;
+
+        if (video) {
+          video.srcObject = stream;
+          video.play();
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+        console.log(
+          "Sorry something went wrong with the video please refresh the page",
+        );
+      });
+  };
+
+  const takeFacePhoto = () => {
+    const width = 1000;
+    const height = width / (16 / 27);
+
+    const video = videoRef.current;
+    const photo = facePhotoRef.current;
+
+    if (!video || !photo) return;
+
+    photo.width = width;
+    photo.height = height;
+
+    const ctx = photo.getContext("2d");
+    ctx?.drawImage(video, 0, 0, width, height);
+    console.log("facePhoto");
+    setSw(!sw);
+  };
+  const takeQrPhoto = () => {
+    const width = 1000;
+    const height = width / (16 / 27);
+
+    const video = videoRef.current;
+    const photo = qrPhotoRef.current;
+
+    if (!video || !photo) return;
+
+    photo.width = width;
+    photo.height = height;
+
+    const ctx = photo.getContext("2d");
+    ctx?.drawImage(video, 0, 0, width, height);
+    console.log("qrPhoto");
+    setSw(!sw);
+  };
+
+  useEffect(() => {
+    getVideo();
+  }, [sw]);
 
   const toResults = () => {
     navigate("/Results");
@@ -37,20 +104,39 @@ export default function Scanner() {
           </div>
         </div>
         <div className="scannerFace">
-          <div className="face">
-            <MdFace className="faceIcon" />
+          <div className="facecam">
+            {sw ? (
+              <video ref={videoRef} className="screen" playsInline muted />
+            ) : (
+              <MdFace className="faceIcon" />
+            )}
           </div>
+          <div className="face"></div>
         </div>
         <div className="scannerQR">
-          <BsQrCode />
+          {!sw ? (
+            <video ref={videoRef} className="screen" playsInline muted />
+          ) : (
+            <BsQrCode />
+          )}
         </div>
         <div className="scannerFooter">
           <div className="dot"></div>
-          <p className="msg">Please show your Digital Pass</p>
+          {sw ? (
+            <p onClick={takeFacePhoto} className="msg">
+              Please show your Digital Pass
+            </p>
+          ) : (
+            <p onClick={takeQrPhoto} className="msg">
+              Please show your Digital Pass
+            </p>
+          )}
         </div>
         <div className="credentials">
-          &bull; AEROID SECURE PROTOCOL &bull; DO NOT OBSTURUCT CAMERA
+          &bull; AEROID SECURE PROTOCOL &bull; DO NOT OBSTRUCT CAMERA
         </div>
+        <canvas style={{ display: "none" }} ref={qrPhotoRef}></canvas>
+        <canvas style={{ display: "none" }} ref={facePhotoRef}></canvas>
       </div>
     </div>
   );
