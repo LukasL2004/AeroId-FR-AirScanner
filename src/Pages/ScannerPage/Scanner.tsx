@@ -4,6 +4,9 @@ import { BsQrCode } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { MdFace } from "react-icons/md";
+import jsQR from "jsqr";
+import type { verifyPassanger } from "../../Services/Interfaces/Verify";
+import verify from "../../Services/Impl/VerifyService";
 
 export default function Scanner() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -11,8 +14,49 @@ export default function Scanner() {
   const qrPhotoRef = useRef<HTMLCanvasElement>(null);
   // const qrVideoRef = useRef<HTMLVideoElement>(null);
   const [time, setTime] = useState<string>();
+  const requestRef = useRef<number>(null);
   const navigate = useNavigate();
-  const [sw, setSw] = useState<boolean>(true);
+  const [sw, setSw] = useState<boolean>(false);
+  const [qr, setQrData] = useState<string>();
+  const isScanning = useRef<boolean>(true);
+
+  const scanContinuously = () => {
+    if (!isScanning.current) return;
+
+    const video = videoRef.current;
+    const canvas = qrPhotoRef.current;
+
+    if (video && video.readyState === video.HAVE_ENOUGH_DATA && canvas) {
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      if (ctx) {
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: "dontInvert",
+        });
+
+        if (code && code.data.trim().length > 10) {
+          isScanning.current = false;
+
+          console.log("Token VALID extras:", code.data);
+          setQrData(code.data);
+
+          if (requestRef.current) cancelAnimationFrame(requestRef.current);
+
+          setSw(true);
+          return;
+        }
+      }
+    }
+
+    if (isScanning.current) {
+      requestRef.current = requestAnimationFrame(scanContinuously);
+    }
+  };
 
   const getVideo = () => {
     navigator.mediaDevices
@@ -25,6 +69,7 @@ export default function Scanner() {
         if (video) {
           video.srcObject = stream;
           video.play();
+          scanContinuously();
         }
       })
       .catch((e) => {
@@ -50,31 +95,38 @@ export default function Scanner() {
     const ctx = photo.getContext("2d");
     ctx?.drawImage(video, 0, 0, width, height);
     console.log("facePhoto");
-    setSw(!sw);
+    photo.toBlob(
+      async (blob) => {
+        if (!blob) {
+          console.log("An error occured while creating the blob");
+          return;
+        }
+        const data = {
+          qrData: qr!,
+          livePhoto: blob,
+        };
+
+        await verifyData(data);
+        console.log("yupiii");
+      },
+      "image/jpg",
+      0.9,
+    );
   };
 
-  const takeQrPhoto = () => {
-    const width = 1000;
-    const height = width / (16 / 27);
-
-    const video = videoRef.current;
-    const photo = qrPhotoRef.current;
-
-    if (!video || !photo) return;
-
-    photo.width = width;
-    photo.height = height;
-
-    const ctx = photo.getContext("2d");
-    ctx?.drawImage(video, 0, 0, width, height);
-    console.log("qrPhoto");
-    setSw(!sw);
+  const verifyData = async (formData: verifyPassanger) => {
+    try {
+      const resp = await verify.verifySerice(formData);
+      console.log(resp);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   useEffect(() => {
     getVideo();
 
-    setInterval(() => {
+    const interval = setInterval(() => {
       const date = new Date();
       const hours = date.getHours();
       const mins = date.getMinutes();
@@ -83,6 +135,11 @@ export default function Scanner() {
       const currentTime = hours + ":" + mins + ":" + seconds;
       setTime(currentTime);
     }, 1000);
+
+    return () => {
+      clearInterval(interval);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
   }, [sw]);
 
   const toResults = () => {
@@ -136,12 +193,10 @@ export default function Scanner() {
           <div className="dot"></div>
           {sw ? (
             <p onClick={takeFacePhoto} className="msg">
-              Please show your Digital Pass
+              Please take Face Photo
             </p>
           ) : (
-            <p onClick={takeQrPhoto} className="msg">
-              Please show your Digital Pass
-            </p>
+            <p className="msg"> Scanning Digital Pass...</p>
           )}
         </div>
         <div className="credentials">
