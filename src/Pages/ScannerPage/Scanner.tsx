@@ -17,8 +17,10 @@ export default function Scanner() {
   const [time, setTime] = useState<string>();
   const [sw, setSw] = useState<boolean>(false); // false = QR Mode, true = Face Mode
   const [qr, setQrData] = useState<string>("");
+  const qrRef = useRef<string>(""); // Ref pentru a evita stale closure în rAF loop
   const [modelsLoaded, setModelsLoaded] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [toasts, setToasts] = useState<{ id: number; msg: string; type: "error" | "warning" | "info" }[]>([]);
 
   const requestRef = useRef<number>(0);
   const isScanningQR = useRef<boolean>(true);
@@ -27,6 +29,15 @@ export default function Scanner() {
   const faceConfirmedRef = useRef<boolean>(false); // true = față detectată, în delay 1.5s
 
   const navigate = useNavigate();
+
+  const showToast = useCallback(
+    (msg: string, type: "error" | "warning" | "info" = "error") => {
+      const id = Date.now();
+      setToasts((prev) => [...prev, { id, msg, type }]);
+      setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4000);
+    },
+    [],
+  );
 
   // --- 1. Încărcare Modele AI ---
   useEffect(() => {
@@ -57,25 +68,52 @@ export default function Scanner() {
         console.groupEnd();
 
         if (result.isMatch) {
-          // Acces permis → pagina de rezultate
-          setTimeout(() => navigate("/results"), 1000);
+          const currentQr = qrRef.current;
+          const qrParts = currentQr.split("|");
+          console.log("🔍 qrParts:", qrParts);
+
+          const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+          
+          // qrParts[2] = "andrei" (firstname), qrParts[1] = "ticarat" (lastname)
+          // Mereu luăm din QR — result.passengerName are ordinea greșită
+          const extractedName = qrParts.length >= 3
+            ? `${capitalize(qrParts[2])} ${capitalize(qrParts[1])}`
+            : "";
+          const extractedFlight = qrParts.length >= 4 ? qrParts[3] : result.flight;
+          console.log("🪪 Name trimis:", extractedName, "| Flight:", extractedFlight);
+
+          setTimeout(() => navigate("/results", { 
+            state: { name: extractedName, flight: extractedFlight } 
+          }), 1000);
         } else {
-          // Acces respins → facem poză iar (nu ne întoarcem la QR)
-          console.warn("❌ Acces respins — reîncercăm fața.");
+          // Acces respins → resetăm scannerul de la început
+          const reason = result.message || result.aiMessage || "Identitate neconfirmată.";
+          console.warn("❌ Acces respins — resetare scanner.");
+          showToast(`❌ Acces Respins: ${reason}`, "error");
           setLoading(false);
-          // Rămânem în modul FAȚĂ (sw = true) și cu QR-ul păstrat
-          isScanningFace.current = true;
+          setQrData("");
+          qrRef.current = "";
+          setSw(false);
+          isScanningQR.current = true;
+          isScanningFace.current = false;
+          qrConfirmedRef.current = false;
           faceConfirmedRef.current = false;
         }
       } catch (e) {
         console.error("Server Error:", e);
+        showToast("⚠️ Eroare server. Încercăți din nou.", "warning");
         setLoading(false);
-        // Eroare API → reîncercăm fața (ca să nu te pună sa scanezi QR iar)
-        isScanningFace.current = true;
+        // Eroare API → resetăm scannerul de la început
+        setQrData("");
+        qrRef.current = "";
+        setSw(false);
+        isScanningQR.current = true;
+        isScanningFace.current = false;
+        qrConfirmedRef.current = false;
         faceConfirmedRef.current = false;
       }
     },
-    [navigate],
+    [navigate, showToast],
   );
 
   // --- 3. Curăță overlay-ul canvas ---
@@ -107,7 +145,7 @@ export default function Scanner() {
       async (blob) => {
         if (blob) {
           setLoading(true);
-          await verifyData({ qrData: qr, livePhoto: blob });
+          await verifyData({ qrData: qrRef.current, livePhoto: blob });
         }
       },
       "image/jpeg",
@@ -239,6 +277,7 @@ export default function Scanner() {
             
             // Ține chenarul 1 secundă fix, apoi mută instant la față
             setTimeout(() => {
+              qrRef.current = code.data; // Actualizăm ref-ul ÎNAINTE de state pentru a evita stale closure
               setQrData(code.data);
               setSw(true);
               isScanningQR.current = false;
@@ -449,6 +488,15 @@ export default function Scanner() {
           &bull; AEROID SECURE PROTOCOL &bull; BIOMETRIC DATA ENCRYPTED
         </div>
         <canvas style={{ display: "none" }} ref={canvasRef}></canvas>
+      </div>
+
+      {/* TOAST NOTIFICATIONS */}
+      <div className="toastContainer">
+        {toasts.map((t) => (
+          <div key={t.id} className={`toast ${t.type}`}>
+            <span className="toastMsg">{t.msg}</span>
+          </div>
+        ))}
       </div>
 
       {/* LOADING OVERLAY */}
