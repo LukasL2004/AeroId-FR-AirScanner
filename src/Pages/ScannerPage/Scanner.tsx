@@ -23,6 +23,8 @@ export default function Scanner() {
   const requestRef = useRef<number>(0);
   const isScanningQR = useRef<boolean>(true);
   const isScanningFace = useRef<boolean>(false);
+  const qrConfirmedRef = useRef<boolean>(false);   // true = QR confirmat, în delay 1s
+  const faceConfirmedRef = useRef<boolean>(false); // true = față detectată, în delay 1.5s
 
   const navigate = useNavigate();
 
@@ -56,7 +58,7 @@ export default function Scanner() {
 
         if (result.isMatch) {
           // Acces permis → pagina de rezultate
-          setTimeout(() => navigate("/Results"), 1000);
+          setTimeout(() => navigate("/results"), 1000);
         } else {
           // Acces respins → resetăm scannerul de la început
           console.warn("❌ Acces respins — resetare scanner.");
@@ -65,6 +67,8 @@ export default function Scanner() {
           setSw(false);
           isScanningQR.current = true;
           isScanningFace.current = false;
+          qrConfirmedRef.current = false;
+          faceConfirmedRef.current = false;
         }
       } catch (e) {
         console.error("Server Error:", e);
@@ -137,15 +141,112 @@ export default function Scanner() {
           );
           const code = jsQR(imgData.data, imgData.width, imgData.height);
 
-          if (code && code.data.trim().length > 10) {
-            console.log("QR Detectat!");
-            setQrData(code.data);
-            isScanningQR.current = false;
-            setSw(true); // Switch UI la modul Față imediat
-            // Delay 3s înainte de a porni scanarea feței
+          // Overlay canvas — chenar pe QR detectat (orice cod, nu doar cel valid)
+          const overlay = overlayCanvasRef.current;
+          if (overlay) {
+            if (
+              overlay.width !== overlay.offsetWidth ||
+              overlay.height !== overlay.offsetHeight
+            ) {
+              overlay.width = overlay.offsetWidth;
+              overlay.height = overlay.offsetHeight;
+            }
+            const oc = overlay.getContext("2d");
+            if (oc) {
+              oc.clearRect(0, 0, overlay.width, overlay.height);
+
+              if (code) {
+                const sx = overlay.width / video.videoWidth;
+                const sy = overlay.height / video.videoHeight;
+
+                // jsQR dă cei 4 colți — computaăm bounding-rect după oglindire (CSS scaleX(-1))
+                const mirror = (px: number) => (video.videoWidth - px) * sx;
+                const xs = [
+                  mirror(code.location.topLeftCorner.x),
+                  mirror(code.location.topRightCorner.x),
+                  mirror(code.location.bottomRightCorner.x),
+                  mirror(code.location.bottomLeftCorner.x),
+                ];
+                const ys = [
+                  code.location.topLeftCorner.y * sy,
+                  code.location.topRightCorner.y * sy,
+                  code.location.bottomRightCorner.y * sy,
+                  code.location.bottomLeftCorner.y * sy,
+                ];
+                const rx = Math.min(...xs);
+                const ry = Math.min(...ys);
+                const rw = Math.max(...xs) - rx;
+                const rh = Math.max(...ys) - ry;
+                const cornerLen = Math.min(rw, rh) * 0.28;
+
+                // 1. Fill semitransparent
+                oc.fillStyle = "rgba(0, 122, 255, 0.06)";
+                oc.fillRect(rx, ry, rw, rh);
+
+                // 2. Colțuri L-shape — identic cu fața
+                oc.save();
+                oc.strokeStyle = "#007aff";
+                oc.lineWidth = 3;
+                oc.lineCap = "round";
+                oc.shadowBlur = 16;
+                oc.shadowColor = "#007aff";
+
+                // Top-left
+                oc.beginPath();
+                oc.moveTo(rx, ry + cornerLen); oc.lineTo(rx, ry); oc.lineTo(rx + cornerLen, ry);
+                oc.stroke();
+                // Top-right
+                oc.beginPath();
+                oc.moveTo(rx + rw - cornerLen, ry); oc.lineTo(rx + rw, ry); oc.lineTo(rx + rw, ry + cornerLen);
+                oc.stroke();
+                // Bottom-left
+                oc.beginPath();
+                oc.moveTo(rx, ry + rh - cornerLen); oc.lineTo(rx, ry + rh); oc.lineTo(rx + cornerLen, ry + rh);
+                oc.stroke();
+                // Bottom-right
+                oc.beginPath();
+                oc.moveTo(rx + rw - cornerLen, ry + rh); oc.lineTo(rx + rw, ry + rh); oc.lineTo(rx + rw, ry + rh - cornerLen);
+                oc.stroke();
+
+                oc.restore();
+
+                // 3. Label "QR" deasupra — identic ca stil cu fața
+                const labelText = "QR";
+                const fontSize = Math.max(11, rw * 0.12);
+                oc.font = `600 ${fontSize}px Inter, sans-serif`;
+                oc.textAlign = "center";
+                const labelX = rx + rw / 2;
+                const labelY = ry - 10;
+
+                const textW = oc.measureText(labelText).width + 16;
+                oc.fillStyle = "rgba(0, 122, 255, 0.18)";
+                oc.beginPath();
+                oc.roundRect(labelX - textW / 2, labelY - fontSize - 2, textW, fontSize + 8, 4);
+                oc.fill();
+
+                oc.fillStyle = "#007aff";
+                oc.shadowBlur = 8;
+                oc.shadowColor = "#007aff";
+                oc.fillText(labelText, labelX, labelY);
+                oc.shadowBlur = 0;
+              }
+            }
+          }
+
+          if (code && code.data.trim().length > 10 && !qrConfirmedRef.current) {
+            console.log("QR Detectat! Aștept 1s pe cadru...");
+            qrConfirmedRef.current = true;
+            
+            // Ține chenarul 1 secundă fix, apoi mută instant la față
             setTimeout(() => {
+              setQrData(code.data);
+              setSw(true);
+              isScanningQR.current = false;
+              clearOverlay();
+              
+              // Scanarea feței începe imediat după ce a dispărut QR-ul
               isScanningFace.current = true;
-            }, 3000);
+            }, 1000);
           }
         }
       }
@@ -190,16 +291,16 @@ export default function Scanner() {
               const lw = 3;
 
               // 1. Fill semitransparent pe zona feței
-              ctx.fillStyle = "rgba(0, 200, 255, 0.06)";
+              ctx.fillStyle = "rgba(0, 122, 255, 0.06)";
               ctx.fillRect(rx, ry, rw, rh);
 
               // 2. Colțuri tip bracket (L-shapes) — glow cyan
               ctx.save();
-              ctx.strokeStyle = "#00c8ff";
+              ctx.strokeStyle = "#007aff";
               ctx.lineWidth = lw;
               ctx.lineCap = "round";
               ctx.shadowBlur = 16;
-              ctx.shadowColor = "#00c8ff";
+              ctx.shadowColor = "#007aff";
 
               // Top-left
               ctx.beginPath();
@@ -231,8 +332,8 @@ export default function Scanner() {
 
               ctx.restore();
 
-              // 3. Label deasupra feței
-              const labelText = "FAȚĂ DETECTATĂ";
+              // 3. Label "FACE" deasupra
+              const labelText = "FACE";
               const fontSize = Math.max(11, rw * 0.1);
               ctx.font = `600 ${fontSize}px Inter, sans-serif`;
               ctx.textAlign = "center";
@@ -241,25 +342,29 @@ export default function Scanner() {
 
               // Pastilă fundal pentru text
               const textW = ctx.measureText(labelText).width + 16;
-              ctx.fillStyle = "rgba(0, 200, 255, 0.18)";
+              ctx.fillStyle = "rgba(0, 122, 255, 0.18)";
               ctx.beginPath();
               ctx.roundRect(labelX - textW / 2, labelY - fontSize - 2, textW, fontSize + 8, 4);
               ctx.fill();
 
-              ctx.fillStyle = "#00c8ff";
+              ctx.fillStyle = "#007aff";
               ctx.shadowBlur = 8;
-              ctx.shadowColor = "#00c8ff";
+              ctx.shadowColor = "#007aff";
               ctx.fillText(labelText, labelX, labelY);
               ctx.shadowBlur = 0;
             }
           }
         }
 
-        if (detection) {
-          console.log("Față Detectată!");
-          isScanningFace.current = false;
-          takePhoto();
-          return;
+        if (detection && !faceConfirmedRef.current) {
+          console.log("Față Detectată! Fac poza în 1.5s...");
+          faceConfirmedRef.current = true; // blochează re-triggerarea
+          // Loopul continuă să ruleze și să deseneze chenarul în timp real
+          setTimeout(() => {
+            isScanningFace.current = false;
+            clearOverlay();
+            takePhoto();
+          }, 1500);
         }
       }
 
@@ -321,22 +426,23 @@ export default function Scanner() {
             {/* Canvas overlay pentru chenarul feței */}
             <canvas ref={overlayCanvasRef} className="faceOverlay" />
             <div className={`scanOverlay ${sw ? "faceMode" : "qrMode"}`}></div>
-          </div>
-        </div>
 
-        <div className="scannerFooter">
-          <div className="modeIcon">
-            {sw ? (
-              <MdFace className="activeIcon" />
-            ) : (
-              <BsQrCode className="activeIcon" />
-            )}
+            {/* Mesaj jos în poza */}
+            <div className="scannerFooter">
+              <div className="modeIcon">
+                {sw ? (
+                  <MdFace className="activeIcon" />
+                ) : (
+                  <BsQrCode className="activeIcon" />
+                )}
+              </div>
+              <p className="msg">
+                {sw
+                  ? "Vă rugăm să priviți camera..."
+                  : "Scanați codul QR de pe bilet..."}
+              </p>
+            </div>
           </div>
-          <p className="msg">
-            {sw
-              ? "Vă rugăm să priviți camera..."
-              : "Scanați codul QR de pe bilet..."}
-          </p>
         </div>
 
         <div className="credentials">

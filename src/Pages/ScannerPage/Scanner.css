@@ -149,8 +149,8 @@
 
 .viewport {
   position: relative;
-  width: min(70vw, 680px);
-  height: min(60vh, 480px);
+  width: min(80vw, 750px);
+  height: min(68vh, 540px);
   border-radius: 22px;
   overflow: hidden;
 
@@ -226,44 +226,56 @@
 /* Responsive viewport */
 @media screen and (max-width: 768px) {
   .viewport {
-    width: 90vw;
-    height: min(55vh, 380px);
+    width: 92vw;
+    height: min(58vh, 400px);
   }
 }
 
 /* ============================================================
-   FOOTER
+   FOOTER — inside viewport, pinned to bottom
    ============================================================ */
 .scannerFooter {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+
   display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: center;
-  gap: 0.65rem;
-  padding: 0.6rem 1.4rem;
-  border: 2px solid #2c2c2c;
-  color: #fff;
+  gap: 0.6rem;
+  padding: 0.55rem 1.3rem;
   border-radius: 50px;
-  background-color: #1c1c1e;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+
+  /* glassmorphism */
+  background: rgba(10, 10, 12, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+
+  /* no wrap */
+  white-space: nowrap;
 }
 
 .modeIcon {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .activeIcon {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   color: #007aff;
-  filter: drop-shadow(0 0 6px rgba(0,122,255,0.5));
+  filter: drop-shadow(0 0 6px rgba(0, 122, 255, 0.5));
 }
 
 .msg {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
-  color: #d1d5db;
+  color: #e0e4ed;
   letter-spacing: 0.01em;
 }
 
