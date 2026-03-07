@@ -10,7 +10,7 @@ import Results from "./Pages/ResultsPage/Results";
 
 function App() {
   const router = createBrowserRouter([
-    { path: "/", loader: () => redirect("/presentaionpage") },
+    { path: "/", loader: () => redirect("/scanner") },
     { path: "/presentaionpage", element: <Presentation /> },
     { path: "/scanner", element: <Scanner /> },
     { path: "/results", element: <Results /> },
