@@ -60,19 +60,19 @@ export default function Scanner() {
           // Acces permis → pagina de rezultate
           setTimeout(() => navigate("/results"), 1000);
         } else {
-          // Acces respins → resetăm scannerul de la început
-          console.warn("❌ Acces respins — resetare scanner.");
+          // Acces respins → facem poză iar (nu ne întoarcem la QR)
+          console.warn("❌ Acces respins — reîncercăm fața.");
           setLoading(false);
-          setQrData("");
-          setSw(false);
-          isScanningQR.current = true;
-          isScanningFace.current = false;
-          qrConfirmedRef.current = false;
+          // Rămânem în modul FAȚĂ (sw = true) și cu QR-ul păstrat
+          isScanningFace.current = true;
           faceConfirmedRef.current = false;
         }
       } catch (e) {
         console.error("Server Error:", e);
         setLoading(false);
+        // Eroare API → reîncercăm fața (ca să nu te pună sa scanezi QR iar)
+        isScanningFace.current = true;
+        faceConfirmedRef.current = false;
       }
     },
     [navigate],
@@ -95,8 +95,8 @@ export default function Scanner() {
 
     clearOverlay();
 
-    const width = 1000;
-    const height = 600;
+    const width = 800; // Redus de la 1000
+    const height = 480; // Redus de la 600
     canvas.width = width;
     canvas.height = height;
 
@@ -110,8 +110,8 @@ export default function Scanner() {
           await verifyData({ qrData: qr, livePhoto: blob });
         }
       },
-      "image/jpg",
-      0.9,
+      "image/jpeg",
+      0.7, // Redus de la 0.9 pentru a micșora dimensiunea fișierului
     );
   }, [qr, verifyData, clearOverlay]);
 
