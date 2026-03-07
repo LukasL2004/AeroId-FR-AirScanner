@@ -3,6 +3,8 @@ export interface verifyResponse {
   passengerName: string;
   flight: string;
   message: string;
+  distance: number;
+  aiMessage: string;
 }
 
 export interface verifyPassanger {

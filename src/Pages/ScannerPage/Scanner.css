@@ -1,3 +1,6 @@
+/* ============================================================
+   GLOBAL BACKGROUND
+   ============================================================ */
 .cont {
   position: relative;
   overflow: hidden;
@@ -23,6 +26,9 @@
   z-index: 0;
 }
 
+/* ============================================================
+   SCANNER LAYOUT — ORIGINAL FULL-SCREEN
+   ============================================================ */
 .scanner {
   position: relative;
   z-index: 1;
@@ -34,6 +40,9 @@
   flex-direction: column;
 }
 
+/* ============================================================
+   NAVBAR — UNCHANGED
+   ============================================================ */
 .scannerNav {
   width: 95%;
   height: 10%;
@@ -48,6 +57,7 @@
   border: 3px solid #242525;
   margin-top: 0.5rem;
 }
+
 .logoSide {
   display: flex;
   flex-direction: row;
@@ -61,16 +71,19 @@
   flex-direction: column;
   justify-content: center;
 }
+
 .titleSide h1 {
   margin: 0;
   font-size: 1.7rem;
   display: flex;
   flex-direction: row;
 }
+
 .titleSide p {
   margin: 0;
   font-size: 0.9rem;
 }
+
 .id {
   color: #007aff;
 }
@@ -83,7 +96,7 @@
   color: #fff;
 }
 
-subTitle {
+.subTitle {
   color: #949ba6;
 }
 
@@ -109,121 +122,253 @@ subTitle {
   gap: 0.4rem;
 }
 
-.scannerFace {
-  position: relative;
-  width: 23%;
-  height: 40%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid #a6abb3;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.face {
-  position: absolute;
-  width: 60%;
-  height: 70%;
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  border: 2px dashed #949ba6;
+.dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
+  background-color: #00c85a;
+  box-shadow: 0 0 6px #00c85a;
+  animation: dotPulse 2s ease-in-out infinite;
 }
 
-.facecam {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+@keyframes dotPulse {
+  0%, 100% { box-shadow: 0 0 5px #00c85a; }
+  50%       { box-shadow: 0 0 14px #00c85a, 0 0 28px rgba(0,200,90,0.3); }
+}
+
+/* ============================================================
+   VIDEO CONTAINER — REDESIGNED
+   ============================================================ */
+.scannerMain {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 1;
+  width: 100%;
 }
 
-.screen {
-  display: flex;
+.viewport {
+  position: relative;
+  width: min(70vw, 680px);
+  height: min(60vh, 480px);
+  border-radius: 22px;
+  overflow: hidden;
+
+  /* Glass card look */
+  background: rgba(0, 0, 0, 0.6);
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 0 0 1px rgba(0, 122, 255, 0.14),
+    0 24px 70px rgba(0, 0, 0, 0.75),
+    0 0 50px rgba(0, 122, 255, 0.10);
+}
+
+.screenMain {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-video {
+  display: block;
   transform: scaleX(-1);
 }
 
-.faceIcon {
-  font-size: 3rem;
-  color: #949ba6;
+/* ── Scan overlays ── */
+.scanOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
 }
 
-.scannerQR {
-  position: relative;
-  width: 15%;
-  height: 25%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid #a6abb3;
-  border-radius: 20px;
-  font-size: 3rem;
-  color: #949ba6;
-  overflow: hidden;
+/* QR mode – corner brackets */
+.scanOverlay.qrMode::before,
+.scanOverlay.qrMode::after {
+  content: "";
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-color: #007aff;
+  border-style: solid;
 }
 
-.scannerQR video {
-  width: 100%;
-  height: 100%;
+.scanOverlay.qrMode::before {
+  top: 22px;
+  left: 22px;
+  border-width: 3px 0 0 3px;
+  border-radius: 8px 0 0 0;
 }
 
+.scanOverlay.qrMode::after {
+  bottom: 22px;
+  right: 22px;
+  border-width: 0 3px 3px 0;
+  border-radius: 0 0 8px 0;
+}
+
+
+/* Face mode – oval guide */
+.scanOverlay.faceMode::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 180px;
+  height: 225px;
+  border: 2px dashed rgba(0, 200, 255, 0.45);
+  border-radius: 50%;
+  animation: ovalPulse 3s ease-in-out infinite;
+}
+
+@keyframes ovalPulse {
+  0%, 100% { opacity: 0.45; }
+  50%       { opacity: 0.85; }
+}
+
+/* Responsive viewport */
+@media screen and (max-width: 768px) {
+  .viewport {
+    width: 90vw;
+    height: min(55vh, 380px);
+  }
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
 .scannerFooter {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0 0.8rem;
-  border: 3px solid #2c2c2c;
+  gap: 0.65rem;
+  padding: 0.6rem 1.4rem;
+  border: 2px solid #2c2c2c;
   color: #fff;
   border-radius: 50px;
-  background-color: #242525;
+  background-color: #1c1c1e;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
+.modeIcon {
+  display: flex;
+  align-items: center;
+}
+
+.activeIcon {
+  font-size: 1.6rem;
+  color: #007aff;
+  filter: drop-shadow(0 0 6px rgba(0,122,255,0.5));
+}
+
+.msg {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #d1d5db;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================================
+   CREDENTIALS — UNCHANGED
+   ============================================================ */
 .credentials {
   margin-bottom: 0.5rem;
   color: #787879;
   font-size: 0.8rem;
 }
 
-@media screen and (max-width: 1450px) {
-  .scannerFace {
-    width: 30%;
-  }
-
-  .scannerQR {
-    width: 20%;
-  }
+/* ============================================================
+   FACE OVERLAY CANVAS
+   ============================================================ */
+.faceOverlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
 }
 
-@media screen and (max-width: 1050px) {
-  .scannerFace {
-    width: 40%;
-  }
-
-  .scannerQR {
-    width: 25%;
-  }
-}
-@media screen and (max-width: 750px) {
-  .scannerFace {
-    width: 55%;
-  }
-
-  .scannerQR {
-    width: 33%;
-  }
+/* ============================================================
+   LOADING OVERLAY
+   ============================================================ */
+.loadingOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.70);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: fadeInOverlay 0.3s ease;
 }
 
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.loadingCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  background: rgba(14, 14, 16, 0.92);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 2.5rem 3.2rem;
+  box-shadow:
+    0 0 0 1px rgba(0, 122, 255, 0.14),
+    0 24px 64px rgba(0, 0, 0, 0.65);
+  animation: slideUpCard 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideUpCard {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.loadingLogo {
+  font-size: 2.2rem;
+  background-color: #007aff;
+  padding: 0.6rem;
+  border-radius: 50%;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(0, 122, 255, 0.4);
+}
+
+.loadingRing {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(0, 122, 255, 0.2);
+  border-top-color: #007aff;
+  border-radius: 50%;
+  animation: spinRing 0.85s linear infinite;
+}
+
+@keyframes spinRing {
+  to { transform: rotate(360deg); }
+}
+
+.loadingTitle {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.loadingSubtitle {
+  margin: 0;
+  color: #949ba6;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media screen and (max-width: 650px) {
   .time {
     display: none;
@@ -231,13 +376,6 @@ video {
 }
 
 @media screen and (max-width: 550px) {
-  .scannerFace {
-    width: 80%;
-  }
-
-  .scannerQR {
-    width: 50%;
-  }
   .status {
     display: none;
   }
@@ -254,12 +392,55 @@ video {
     font-size: 0.8rem;
   }
 }
-@media screen and (max-width: 400px) {
-  .scannerFace {
-    width: 90%;
-  }
 
-  .scannerQR {
-    width: 60%;
-  }
+/* ============================================================
+   SPINNER STYLES
+   ============================================================ */
+.spinner-container {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  margin: 0 auto;
+}
+
+.dot-spinner {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.dot-spinner::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  margin: 0 auto;
+  animation: chaseColor 1s infinite linear;
+}
+
+.dot-spinner:nth-child(1) { transform: rotate(0deg); }
+.dot-spinner:nth-child(2) { transform: rotate(45deg); }
+.dot-spinner:nth-child(3) { transform: rotate(90deg); }
+.dot-spinner:nth-child(4) { transform: rotate(135deg); }
+.dot-spinner:nth-child(5) { transform: rotate(180deg); }
+.dot-spinner:nth-child(6) { transform: rotate(225deg); }
+.dot-spinner:nth-child(7) { transform: rotate(270deg); }
+.dot-spinner:nth-child(8) { transform: rotate(315deg); }
+
+.dot-spinner:nth-child(1)::before { animation-delay: -0.875s; }
+.dot-spinner:nth-child(2)::before { animation-delay: -0.75s; }
+.dot-spinner:nth-child(3)::before { animation-delay: -0.625s; }
+.dot-spinner:nth-child(4)::before { animation-delay: -0.5s; }
+.dot-spinner:nth-child(5)::before { animation-delay: -0.375s; }
+.dot-spinner:nth-child(6)::before { animation-delay: -0.25s; }
+.dot-spinner:nth-child(7)::before { animation-delay: -0.125s; }
+.dot-spinner:nth-child(8)::before { animation-delay: 0s; }
+
+@keyframes chaseColor {
+  0%   { background-color: #00ffcc; transform: scale(1.3); opacity: 1; }
+  100% { background-color: #ffffff; transform: scale(0.8); opacity: 0.3; }
 }
