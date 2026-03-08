@@ -1,5 +1,5 @@
 import "./Results.css";
-import { MdFingerprint } from "react-icons/md";
+import { MdFlightTakeoff } from "react-icons/md";
 import { IoCheckmark, IoClose } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -42,7 +42,7 @@ export default function Results() {
       <div className="results">
         <div className="headerResults" style={{ opacity: 0 }}>
           <div className="resultsIcon">
-            <MdFingerprint className="logo" />
+            <MdFlightTakeoff className="logo" />
             <h1>Aero<span className="id">ID</span></h1>
           </div>
         </div>
@@ -59,7 +59,7 @@ export default function Results() {
       <div className="results">
         <div className="headerResults">
           <div className="resultsIcon">
-            <MdFingerprint className="logo" />
+            <MdFlightTakeoff className="logo" />
             <h1>Aero<span className="id">ID</span></h1>
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function Results() {
     <div className="results">
       <div className="headerResults">
         <div className="resultsIcon">
-          <MdFingerprint className="logo" />
+          <MdFlightTakeoff className="logo" />
           <h1>
             Aero<span className="id">ID</span>
           </h1>
