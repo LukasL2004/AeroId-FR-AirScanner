@@ -42,7 +42,7 @@ export default function Results() {
       <div className="results">
         <div className="headerResults" style={{ opacity: 0 }}>
           <div className="resultsIcon">
-            <MdFlightTakeoff className="logo" />
+            <MdFlightTakeoff style={{ color: '#007aff', fontSize: '2rem' }} />
             <h1>Aero<span className="id">ID</span></h1>
           </div>
         </div>
@@ -59,7 +59,7 @@ export default function Results() {
       <div className="results">
         <div className="headerResults">
           <div className="resultsIcon">
-            <MdFlightTakeoff className="logo" />
+            <MdFlightTakeoff style={{ color: '#007aff', fontSize: '2rem' }} />
             <h1>Aero<span className="id">ID</span></h1>
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function Results() {
     <div className="results">
       <div className="headerResults">
         <div className="resultsIcon">
-          <MdFlightTakeoff className="logo" />
+          <MdFlightTakeoff style={{ color: '#007aff', fontSize: '2rem' }} />
           <h1>
             Aero<span className="id">ID</span>
           </h1>
