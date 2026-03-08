@@ -1,6 +1,6 @@
 import "./Results.css";
 import { MdFingerprint } from "react-icons/md";
-import { IoCheckmark } from "react-icons/io5";
+import { IoCheckmark, IoClose } from "react-icons/io5";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import userDataService from "../../Services/Impl/UserData";
@@ -40,8 +40,15 @@ export default function Results() {
   if (loading) {
     return (
       <div className="results">
-        <div style={{ color: "white", textAlign: "center", marginTop: "40vh" }}>
-          <h2>Loading Boarding Pass Info...</h2>
+        <div className="headerResults" style={{ opacity: 0 }}>
+          <div className="resultsIcon">
+            <MdFingerprint className="logo" />
+            <h1>Aero<span className="id">ID</span></h1>
+          </div>
+        </div>
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <h2>Verifying Identity...</h2>
         </div>
       </div>
     );
@@ -50,12 +57,27 @@ export default function Results() {
   if (error || !flightData) {
     return (
       <div className="results">
-        <div style={{ color: "white", textAlign: "center", marginTop: "40vh" }}>
-          <h2>{error || "An error occurred."}</h2>
-          <button className="returnBtn" onClick={() => navigate("/scanner")}>
-            Return to Scanner
-          </button>
+        <div className="headerResults">
+          <div className="resultsIcon">
+            <MdFingerprint className="logo" />
+            <h1>Aero<span className="id">ID</span></h1>
+          </div>
         </div>
+        <div className="resultsBody errorBody">
+          <div className="errorMarkContainer">
+            <IoClose className="checkmark errorMark" style={{ background: 'linear-gradient(135deg, #ff3b30, #b30000)', boxShadow: '0 0 20px rgba(255, 59, 48, 0.5)' }} />
+          </div>
+          <div className="resultsTitles">
+            <h2 className="resultsSubTitle" style={{ color: '#ff3b30' }}>Verification Failed</h2>
+            <p className="subTitle">{error || "An error occurred."}</p>
+          </div>
+          <div className="bottomSection" style={{ width: '85%', padding: '0 1.5rem', marginBottom: '1.5rem' }}>
+            <button className="returnBtn" onClick={() => navigate("/scanner")}>
+              Return to Scanner
+            </button>
+          </div>
+        </div>
+        <div className="footerInfo errorFooter">ID: 0x8f3...a9b2 &bull; ERROR</div>
       </div>
     );
   }
@@ -85,7 +107,7 @@ export default function Results() {
         <div className="resultsMainComp">
           <div className="flightInfo">
             <div className="flight">
-              <p className="subTitle">Fligth</p>
+              <p className="subTitle">Flight</p>
               <h1 className="flightNumber">{flightData.flightId || flight}</h1>
               <div className="time">&bull; ON TIME</div>
             </div>
@@ -108,10 +130,7 @@ export default function Results() {
             </div>
           </div>
         </div>
-        <div className="bootomSection">
-          <button className="passBtn" onClick={() => navigate("/boardingpass")}>
-            View Boarding Pass
-          </button>
+        <div className="bottomSection">
           <button className="returnBtn" onClick={() => navigate("/scanner")}>
             Return
           </button>
